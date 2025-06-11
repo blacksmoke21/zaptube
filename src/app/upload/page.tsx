@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { createAndSignEvent, publishEvent } from "@/lib/nostr";
 import { useRouter } from "next/navigation";
-import { uploadToBlossom } from "@/lib/blossom";
-import { hexToBytes } from "nostr-tools/utils";
+// import { uploadToBlossom } from "@/lib/blossom";
+// import { hexToBytes } from "nostr-tools/utils";
 
 export default function UploadPage() {
   const router = useRouter();
@@ -46,7 +46,7 @@ export default function UploadPage() {
         ],
       };
 
-      var hashtags: string[][] = [];
+      let hashtags: string[][] = [];
       if (tags !== "") {
         hashtags = tags.split(",").map((tag) => ["t", tag.trim()]);
       }

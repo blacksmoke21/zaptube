@@ -1,5 +1,5 @@
 // lib/nostr.ts
-import { finalizeEvent, getPublicKey, SimplePool, type Event } from "nostr-tools";
+import { finalizeEvent, SimplePool, type Event } from "nostr-tools";
 import type { EventTemplate } from "nostr-tools";
 import { hexToBytes } from "@noble/hashes/utils";
 
@@ -9,7 +9,7 @@ declare global {
   interface Window {
     nostr?: {
       getPublicKey: () => Promise<string>;
-      signEvent: (event: any) => Promise<Event>;
+      signEvent: (event: EventTemplate) => Promise<Event>;
     };
   }
 }
