@@ -1,9 +1,9 @@
 "use client";
-
 import { useEffect, useRef, useState, useCallback } from "react";
 import { SimplePool } from "nostr-tools/pool";
-import Link from "next/link";
 import { fetchProfile } from "@/lib/fetchProfile";
+import { VideoCard } from "./VideoCard";
+import { SkeletonCard } from "./SkeletonCard";
 
 type VideoPost = {
   id: string;
@@ -14,20 +14,16 @@ type VideoPost = {
   profile?: { name: string; picture: string };
 };
 
-const PAGE_SIZE = 16;
-const relays = [
-  "wss://relay.damus.io",
-  "wss://nos.lol",
-  "wss://relay.snort.social",
-  "wss://relay.nostr.band"
-];
+const PAGE_SIZE = 12;
+const relays = ["wss://relay.damus.io", "wss://nos.lol", "wss://relay.snort.social", "wss://relay.nostr.band"];
 
 export default function VideoFeed() {
   const [videos, setVideos] = useState<VideoPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
+  const [preloadedNextPage, setPreloadedNextPage] = useState(false);
   const loaderRef = useRef<HTMLDivElement | null>(null);
-  const lastTimestampRef = useRef<number>(Math.floor(Date.now() / 1000)); // initial time
+  const lastTimestampRef = useRef<number>(Math.floor(Date.now() / 1000));
 
   const fetchVideos = useCallback(async () => {
     if (!hasMore) return;
@@ -37,7 +33,7 @@ export default function VideoFeed() {
 
     const events = await pool.querySync(relays, {
       kinds: [21, 34235],
-      limit: PAGE_SIZE,
+      limit: PAGE_SIZE * 3,
       until: lastTimestampRef.current,
     });
 
@@ -54,6 +50,8 @@ export default function VideoFeed() {
     for (const event of sorted) {
       const iMetaTag = event.tags.find((t) => t[0] === "imeta");
       if (!iMetaTag || !iMetaTag[1]) continue;
+      const videoUrl = iMetaTag[1].split(" ");
+      if (videoUrl[0] !== "url" || videoUrl.length !== 2) continue;
 
       const profile = await fetchProfile(event.pubkey);
 
@@ -67,7 +65,7 @@ export default function VideoFeed() {
             id: event.id,
             pubkey: event.pubkey,
             content: event.content,
-            url: iMetaTag[1].split(" ")[1],
+            url: videoUrl[1],
             created_at: event.created_at,
             profile,
           },
@@ -83,7 +81,13 @@ export default function VideoFeed() {
     fetchVideos();
   }, [fetchVideos]);
 
-  // 👇 Infinite scroll
+  useEffect(() => {
+    if (!loading && !preloadedNextPage && videos.length > 0) {
+      setPreloadedNextPage(true);
+      fetchVideos();
+    }
+  }, [loading, videos.length, fetchVideos, preloadedNextPage]);
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -105,50 +109,14 @@ export default function VideoFeed() {
     };
   }, [fetchVideos, loading]);
 
-  const SkeletonCard = () => (
-    <div className="bg-gray-800 rounded-xl p-3 animate-pulse">
-      <div className="relative pb-[56.25%] mb-2 bg-gray-700 rounded-md" />
-      <div className="h-4 bg-gray-700 rounded w-3/4 mb-2" />
-      <div className="flex items-center space-x-2">
-        <div className="w-8 h-8 bg-gray-600 rounded-full" />
-        <div className="h-3 w-1/2 bg-gray-700 rounded" />
-      </div>
-    </div>
-  );
-
   return (
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {videos.map((video) => (
-          <Link
-            key={video.id}
-            href={`/watch?id=${video.id}`}
-            className="bg-gray-900 rounded-xl p-3 shadow-md hover:ring-2 hover:ring-purple-500 transition"
-          >
-            <div className="relative pb-[56.25%] mb-2 rounded-md overflow-hidden">
-              <img
-                src={`https://i.ytimg.com/vi/${video.id}/hqdefault.jpg`}
-                alt="thumbnail"
-                className="absolute top-0 left-0 w-full h-full object-cover"
-              />
-            </div>
-
-            <p className="text-md text-gray-300 truncate mb-2">{video.content || "Untitled Video"}</p>
-
-            <div className="flex items-center space-x-2 text-xs text-gray-400">
-              {video.profile?.picture ? (
-                <img src={video.profile.picture} alt="profile" className="w-8 h-8 rounded-full" />
-              ) : (
-                <div className="w-8 h-8 rounded-full bg-gray-600" />
-              )}
-              <span>{video.profile?.name || video.pubkey.slice(0, 12)}</span>
-              <span>· {new Date(video.created_at * 1000).toLocaleDateString()}</span>
-            </div>
-          </Link>
+          <VideoCard key={video.id} video={video} />
         ))}
 
-        {loading &&
-          Array.from({ length: PAGE_SIZE }).map((_, i) => <SkeletonCard key={`skeleton-${i}`} />)}
+        {loading && Array.from({ length: PAGE_SIZE }).map((_, i) => <SkeletonCard key={`skeleton-${i}`} />)}
       </div>
 
       <div ref={loaderRef} className="w-full py-10 text-center text-gray-400">

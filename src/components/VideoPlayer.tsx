@@ -19,23 +19,29 @@ export default function VideoPlayer({ id }: { id: string }) {
     if (!id || id == "") return;
 
     const pool = new SimplePool();
-    const sub = pool.subscribeMany(["wss://relay.damus.io", "wss://nos.lol"], [{ ids: [id] }], {
-      onevent(event) {
-        const iMetaTag = event.tags.find((t) => t[0] === "imeta");
-        if (!iMetaTag || !iMetaTag[1]) return;
+    const sub = pool.subscribeMany(
+      ["wss://relay.damus.io", "wss://nos.lol", "wss://relay.snort.social", "wss://relay.nostr.band"],
+      [{ ids: [id] }],
+      {
+        onevent(event) {
+          const iMetaTag = event.tags.find((t) => t[0] === "imeta");
+          if (!iMetaTag || !iMetaTag[1]) return;
+          const videoUrl = iMetaTag[1].split(" ");
+          if (videoUrl[0] !== "url" || videoUrl.length !== 2) return;
 
-        setVideo({
-          id: event.id,
-          url: iMetaTag[1].split(" ")[1],
-          content: event.content,
-          pubkey: event.pubkey,
-          created_at: event.created_at,
-        });
-      },
-      oneose() {
-        console.log("done loading");
-      },
-    });
+          setVideo({
+            id: event.id,
+            url: videoUrl[1],
+            content: event.content,
+            pubkey: event.pubkey,
+            created_at: event.created_at,
+          });
+        },
+        oneose() {
+          console.log("done loading");
+        },
+      }
+    );
 
     return () => sub.close();
   }, [id]);

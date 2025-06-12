@@ -2,12 +2,12 @@
 
 import { Home, TrendingUp, Subscript, Library, History, Clock, ThumbsUp, Settings } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
-interface SidebarProps {
-  collapsed?: boolean;
-}
-
-export function Sidebar({ collapsed = false }: SidebarProps) {
+export function Sidebar() {
+  const pathname = usePathname();
+  const collapsed = pathname.startsWith("/watch");
+  
   const mainItems = [
     { icon: Home, label: "Home", href: "/" },
     { icon: TrendingUp, label: "Trending", href: "/trending" },
