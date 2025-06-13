@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 export function Sidebar() {
   const pathname = usePathname();
   const collapsed = pathname.startsWith("/watch");
-  
+
   const mainItems = [
     { icon: Home, label: "Home", href: "/" },
     { icon: TrendingUp, label: "Trending", href: "/trending" },
@@ -23,7 +23,7 @@ export function Sidebar() {
 
   if (collapsed) {
     return (
-      <aside className="w-25 border-r border-gray-700 bg-background">
+      <aside className="hidden sm:block w-25 border-r border-gray-700 bg-background">
         <div className="space-y-2 p-2">
           {mainItems.map((item) => (
             <Link key={item.href} href={item.href}>
@@ -39,7 +39,7 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="w-64 border-r border-gray-700 bg-background">
+    <aside className="hidden sm:block w-64 border-r border-gray-700 bg-background">
       <div className="space-y-4 py-4">
         <div className="px-3 py-2">
           <div className="space-y-1">

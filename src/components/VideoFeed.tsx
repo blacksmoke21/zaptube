@@ -4,6 +4,7 @@ import { SimplePool } from "nostr-tools/pool";
 import { fetchProfile } from "@/lib/fetchProfile";
 import { VideoCard } from "./VideoCard";
 import { SkeletonCard } from "./SkeletonCard";
+import { TopPillTabs } from "@/components/TopPillTabs";
 
 type VideoPost = {
   id: string;
@@ -111,6 +112,7 @@ export default function VideoFeed() {
 
   return (
     <>
+    <TopPillTabs />
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {videos.map((video) => (
           <VideoCard key={video.id} video={video} />

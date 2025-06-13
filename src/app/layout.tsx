@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import "./styles/globals.css";
-import { Sidebar } from "@/components/Sidebar";
 import Header from "@/components/Header";
+import { Sidebar } from "@/components/Sidebar";
+import { MobileTabs } from "@/components/MobileTabs";
 
 export const metadata: Metadata = {
   title: "Zaptube - Decentralized Video Sharing",
@@ -19,6 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <main className="flex-1 p-6">{children}</main>
           </div>
         </div>
+        <MobileTabs />
       </body>
     </html>
   );
