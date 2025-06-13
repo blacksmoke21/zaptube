@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { loginWithExtension, loginWithPrivateKey, generateNewKeypair } from "@/lib/auth";
+import { loginWithExtension, loginWithPrivateKey, generateNewKeypair } from "@/utils/auth";
 
 export default function LoginModal({ onLogin }: { onLogin: (pk: string, sk?: string) => void }) {
   const [show, setShow] = useState(false);

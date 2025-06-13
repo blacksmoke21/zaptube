@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { createAndSignEvent, publishEvent } from "@/lib/nostr";
+import { createAndSignEvent, publishEvent } from "@/utils/nostr";
 import { useRouter } from "next/navigation";
 // import { uploadToBlossom } from "@/lib/blossom";
 // import { hexToBytes } from "nostr-tools/utils";

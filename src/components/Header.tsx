@@ -1,8 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
 import LoginModal from "./LoginModal";
-import { logout } from "@/lib/auth";
-import { fetchProfile } from "@/lib/fetchProfile";
+import { logout } from "@/utils/auth";
+import { fetchProfile } from "@/utils/fetchProfile";
 import Link from "next/link";
 
 export default function Header() {
