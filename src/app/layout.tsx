@@ -13,14 +13,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className="bg-gray-900 text-white">
-        <div className="min-h-screen bg-background">
+        {/* <div className="min-h-screen bg-background">
           <Header />
           <div className="flex">
             <Sidebar />
             <main className="flex-1 p-6">{children}</main>
           </div>
         </div>
-        <MobileTabs />
+        <MobileTabs /> */}
+        <h1>Coming Soon</h1>
       </body>
     </html>
   );
